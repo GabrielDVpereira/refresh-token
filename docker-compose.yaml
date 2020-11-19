@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  app:
+    build:
+      context: .
+    depends_on:
+      - redis
+    command: yarn dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - ./node_modules:/app/node_modules
+
+  auth:
+    build:
+      context: .
+    depends_on:
+      - redis
+    command: yarn auth
+    ports:
+      - "4000:4000"
+    volumes:
+      - .:/app
+      - ./node_modules:/app/node_modules
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
